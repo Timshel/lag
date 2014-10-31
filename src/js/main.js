@@ -83,71 +83,46 @@ function initVideo() {
     elt.setAttribute('height', source.offsetHeight);
   }
 
-  var [leftCanvasHidden, leftCanvasHiddenCon] = getCanvasAndContext('left-hidden');
-  var [leftCanvasShown, leftCanvasShownCon] = getCanvasAndContext('left-shown');
-  var [rightCanvasHidden, rightCanvasHiddenCon] = getCanvasAndContext('right-hidden');
-  var [rightCanvasShown, rightCanvasShownCon] = getCanvasAndContext('right-shown');
+  function reverseCanvas(canvasAndContext) {
+    var[canvas, context] = canvasAndContext
+    context.translate(canvas.offsetWidth, 0);
+    context.scale(-1, 1);
+  };
 
-  var w = videoLeft.offsetWidth;
-  var h = videoLeft.offsetHeight;
+  function onPlay(video, canvasAndContextHidden, canvasAndContextShow, buffer){
+    var [canvasHidden, canvasHiddenCon] = canvasAndContextHidden;
+    var [canvasShown, canvasShownCon]   = canvasAndContextShow;
 
-  console.log(w)
-  console.log(h)
+    setTimeout(() => {
+      var w = video.offsetWidth;
+      var h = video.offsetHeight;
 
-  var initialized = false;
-  videoLeft.addEventListener('canplay', e => {
-    if (!initialized) {
-      // videoWidth isn't always set correctly in all browsers
-      if (videoLeft.videoWidth > 0) {
-        h = videoLeft.videoHeight / (videoLeft.videoWidth / w);
-      }
+      setDimensions(canvasHidden, video);
+      setDimensions(canvasShown, video);
 
-      setDimensions(leftCanvasHidden, videoLeft);
-      setDimensions(leftCanvasShown, videoLeft);
-      setDimensions(rightCanvasHidden, videoRight);
-      setDimensions(rightCanvasShown, videoRight);
+      reverseCanvas([canvasHidden, canvasHiddenCon])
+      reverseCanvas([canvasShown, canvasShownCon])
 
-      // Reverse the canvas image
-      leftCanvasHiddenCon.translate(w, 0);
-      leftCanvasHiddenCon.scale(-1, 1);
-      leftCanvasShownCon.translate(w, 0);
-      leftCanvasShownCon.scale(-1, 1);
-
-      rightCanvasHiddenCon.translate(w, 0);
-      rightCanvasHiddenCon.scale(-1, 1);
-      rightCanvasShownCon.translate(w, 0);
-      rightCanvasShownCon.scale(-1, 1);
-      initialized = true;
-    }
-  }, false);
-
-  var leftBuffer = Buffer({size: 30});
-  var rightBuffer = Buffer({size: 30});
+      setInterval(function() {
+        if (video.paused || video.ended) return;
+        canvasHiddenCon.fillRect(0, 0, w, h);
+        canvasHiddenCon.drawImage(video, 0, 0, w, h);
+        canvasShownCon.fillRect(0, 0, w, h);
+        var el = buffer.put(canvasHiddenCon.getImageData(0, 0, w, h));
+        if (el !== undefined) {
+          canvasShownCon.putImageData(el, 0, 0);
+        }
+      }, 33);
+    }, 1000);
+  }
 
   // Every 33 milliseconds copy the video image to the canvas
   videoLeft.addEventListener('play', function() {
-    setInterval(function() {
-      if (videoLeft.paused || videoLeft.ended) return;
-      leftCanvasHiddenCon.fillRect(0, 0, w, h);
-      leftCanvasHiddenCon.drawImage(videoLeft, 0, 0, w, h);
-      leftCanvasShownCon.fillRect(0, 0, w, h);
-      var el = leftBuffer.put(leftCanvasHiddenCon.getImageData(0, 0, w, h));
-      if (el !== undefined) {
-        leftCanvasShownCon.putImageData(el, 0, 0);
-      }
-    }, 33);
+    onPlay(videoLeft, getCanvasAndContext('left-hidden'), getCanvasAndContext('left-shown'), Buffer({size: 1}))
   }, false);
+
   videoRight.addEventListener('play', function() {
-    setInterval(function() {
-      if (videoRight.paused || videoRight.ended) return;
-      rightCanvasHiddenCon.fillRect(0, 0, w, h);
-      rightCanvasHiddenCon.drawImage(videoRight, 0, 0, w, h);
-      rightCanvasShownCon.fillRect(0, 0, w, h);
-      var el = rightBuffer.put(rightCanvasHiddenCon.getImageData(0, 0, w, h));
-      if (el !== undefined) {
-        rightCanvasShownCon.putImageData(el, 0, 0);
-      }
-    }, 33);
+    onPlay(videoRight, getCanvasAndContext('right-hidden'), getCanvasAndContext('right-shown'), Buffer({size: 1}))
   }, false);
 
   if (navigator.getUserMedia === undefined) {
