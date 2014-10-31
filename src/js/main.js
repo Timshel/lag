@@ -50,11 +50,12 @@ function initVideo() {
     var videoLeft = document.querySelector('#left');
     videoLeft.src = window.URL.createObjectURL(localMediaStream);
     videoLeft.onloadedmetadata = function(e) {};
-  }, e => console.error('Error during video acquisition:', e));
-  navigator.getUserMedia({video: true}, localMediaStream => {
-    var videoRight = document.querySelector('#right');
-    videoRight.src = window.URL.createObjectURL(localMediaStream);
-    videoRight.onloadedmetadata = function(e) {};
+
+    navigator.getUserMedia({video: true}, localMediaStream => {
+      var videoRight = document.querySelector('#right');
+      videoRight.src = window.URL.createObjectURL(localMediaStream);
+      videoRight.onloadedmetadata = function(e) {};
+    }, e => console.error('Error during video acquisition:', e));
   }, e => console.error('Error during video acquisition:', e));
 }
 initVideo();
