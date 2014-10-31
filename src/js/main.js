@@ -1,3 +1,5 @@
+/* jshint esnext:true */
+
 // Find the right method, call on correct element
 function launchIntoFullscreen(element) {
   if(element.requestFullscreen) {
