@@ -60,7 +60,7 @@ var Buffer = function (tpl) {
 
 function initVideo() {
 
-  var videoLeft = document.querySelector('#left-video');
+  var videoLeft  = document.querySelector('#left-video');
   var videoRight = document.querySelector('#right-video');
 
   function getCanvasAndContext(id) {
@@ -69,12 +69,18 @@ function initVideo() {
     return [canvas, conn];
   }
 
+  function setDimensions(elt, source) {
+    elt.setAttribute('width', source.offsetWidth);
+    elt.setAttribute('height', source.offsetHeight);
+  }
+
   var [leftCanvasHidden, leftCanvasHiddenCon] = getCanvasAndContext('left-hidden');
   var [leftCanvasShown, leftCanvasShownCon] = getCanvasAndContext('left-shown');
   var [rightCanvasHidden, rightCanvasHiddenCon] = getCanvasAndContext('right-hidden');
   var [rightCanvasShown, rightCanvasShownCon] = getCanvasAndContext('right-shown');
-  var w = 600;
-  var h = 420;
+
+  var w = videoLeft.offsetWidth;
+  var h = videoLeft.offsetHeight;
 
   var initialized = false;
   videoLeft.addEventListener('canplay', e => {
@@ -83,19 +89,18 @@ function initVideo() {
       if (videoLeft.videoWidth > 0) {
         h = videoLeft.videoHeight / (videoLeft.videoWidth / w);
       }
-      leftCanvasHidden.setAttribute('width', w);
-      leftCanvasHidden.setAttribute('height', h);
-      leftCanvasShown.setAttribute('width', w);
-      leftCanvasShown.setAttribute('height', h);
-      rightCanvasHidden.setAttribute('width', w);
-      rightCanvasHidden.setAttribute('height', h);
-      rightCanvasShown.setAttribute('width', w);
-      rightCanvasShown.setAttribute('height', h);
+
+      setDimensions(leftCanvasHidden, videoLeft);
+      setDimensions(leftCanvasShown, videoLeft);
+      setDimensions(rightCanvasHidden, videoRight);
+      setDimensions(rightCanvasShown, videoRight);
+
       // Reverse the canvas image
       leftCanvasHiddenCon.translate(w, 0);
       leftCanvasHiddenCon.scale(-1, 1);
       leftCanvasShownCon.translate(w, 0);
       leftCanvasShownCon.scale(-1, 1);
+
       rightCanvasHiddenCon.translate(w, 0);
       rightCanvasHiddenCon.scale(-1, 1);
       rightCanvasShownCon.translate(w, 0);
