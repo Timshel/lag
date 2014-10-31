@@ -42,6 +42,28 @@ if (navigator.getUserMedia === undefined) {
   );
 }
 
+var Buffer = function (tpl) {
+  var size = tpl.size;
+  var elems = new Array(size);
+  var idxRead = 1;
+  var idxWrite = 0;
+  function get() {
+    var idx = idxRead;
+    idxRead = (idxRead + 1) % size;
+    return elems[idxRead];
+  }
+  function put(el) {
+    var idx = idxWrite;
+    idxWrite = (idxWrite + 1) % size;
+    elems[idxWrite] = el;
+  }
+  return {
+    size,
+    "get": get,
+    put
+  };
+};
+
 function initVideo() {
 
   var videoLeft = document.querySelector('#left-video');
@@ -87,6 +109,10 @@ function initVideo() {
       initialized = true;
     }
   }, false);
+
+  var leftBuffer = Buffer({size: 30});
+  var rightBuffer = Buffer({size: 30});
+
   // Every 33 milliseconds copy the video image to the canvas
   videoLeft.addEventListener('play', function() {
     setInterval(function() {
@@ -94,7 +120,11 @@ function initVideo() {
       leftCanvasHiddenCon.fillRect(0, 0, w, h);
       leftCanvasHiddenCon.drawImage(videoLeft, 0, 0, w, h);
       leftCanvasShownCon.fillRect(0, 0, w, h);
-      leftCanvasShownCon.putImageData(leftCanvasHiddenCon.getImageData(0, 0, w, h), 0, 0);
+      leftBuffer.put(leftCanvasHiddenCon.getImageData(0, 0, w, h));
+      var el = leftBuffer.get();
+      if (el !== undefined) {
+        leftCanvasShownCon.putImageData(el, 0, 0);
+      }
     }, 33);
   }, false);
   videoRight.addEventListener('play', function() {
@@ -103,7 +133,11 @@ function initVideo() {
       rightCanvasHiddenCon.fillRect(0, 0, w, h);
       rightCanvasHiddenCon.drawImage(videoRight, 0, 0, w, h);
       rightCanvasShownCon.fillRect(0, 0, w, h);
-      rightCanvasShownCon.putImageData(rightCanvasHiddenCon.getImageData(0, 0, w, h), 0, 0);
+      rightBuffer.put(rightCanvasHiddenCon.getImageData(0, 0, w, h));
+      var el = rightBuffer.get();
+      if (el !== undefined) {
+        rightCanvasShownCon.putImageData(el, 0, 0);
+      }
     }, 33);
   }, false);
 
