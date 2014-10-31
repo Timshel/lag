@@ -54,12 +54,12 @@ var Buffer = function (tpl) {
   function updateSize(newSize) {
     var newElems = new Array(newSize);
     var m = Math.min(size, newSize);
-    for (var i = 0; i < m; i++) {
-      newElems[i] = elems[(idx + i) % size];
+    for (var i = m; i >= 0; i--) {
+      newElems[m - i] = elems[(idx - i) % size];
     }
     elems = newElems;
     size = newSize;
-    idx = 0;
+    idx = m;
   }
   return {
     size,
