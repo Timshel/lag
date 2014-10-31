@@ -76,7 +76,7 @@ var lagValue = lagSlider.value;
 var lagShown = document.getElementById("lag-shown");
 lagShown.innerHTML = lagValue;
 
-var refreshValue = 33;
+var refreshValue = 40;
 
 navigator.getUserMedia({video: true, audio: true}, localMediaStream => {
   videoLeft.src = window.URL.createObjectURL(localMediaStream);
@@ -118,9 +118,6 @@ function initVideo() {
       setDimensions(canvasHidden, video);
       setDimensions(canvasShown, video);
 
-      reverseCanvas([canvasHidden, canvasHiddenCon])
-      reverseCanvas([canvasShown, canvasShownCon])
-
       setInterval(function() {
         if (video.paused || video.ended) return;
         canvasHiddenCon.fillRect(0, 0, w, h);
@@ -130,7 +127,7 @@ function initVideo() {
         if (el !== undefined) {
           canvasShownCon.putImageData(el, 0, 0);
         }
-      }, 33);
+      }, refreshValue);
     }, 1000);
   }
 
