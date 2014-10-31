@@ -3,9 +3,30 @@
  padding: o
  margin: 0
 
+html, body
+  height: 100%
+
 #dive
   background-color: black
-  img
+  height: 100%
+  position: relative
+
+  .holder
     display: inline-block
-    width: 49.8%
+    position: absolute
+    overflow: hidden
+    height: 100%
+    width: 50%
+    top: 0
+
+    &.left
+      left: 0
+
+    &.right
+      right: 0
+
+
+
+  img
+    right: 50%
     height: 100%
