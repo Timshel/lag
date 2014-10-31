@@ -1,4 +1,6 @@
 
+console.log("hello")
+
 
 // Find the right method, call on correct element
 function launchIntoFullscreen(element) {
@@ -30,5 +32,6 @@ function exitFullscreen() {
 }
 
 document.getElementById("fullscreen").addEventListener("click", function(){
-  launchIntoFullscreen(document.documentElement);
+  var dive = document.getElementById("dive");
+  launchIntoFullscreen(dive);
 }, false);
