@@ -33,3 +33,28 @@ document.getElementById("fullscreen").addEventListener("click", function(){
   var dive = document.getElementById("dive");
   launchIntoFullscreen(dive);
 }, false);
+
+function initVideo() {
+  if (navigator.getUserMedia === undefined) {
+    navigator.getUserMedia = (
+      navigator.webkitGetUserMedia ||
+      navigator.mozGetUserMedia ||
+      navigator.msGetUserMedia
+    );
+  }
+  if (navigator.getUserMedia === undefined) {
+    console.error("getUserMedia() not found");
+    return;
+  }
+  navigator.getUserMedia({video: true, audio: true}, localMediaStream => {
+    var videoLeft = document.querySelector('#left');
+    videoLeft.src = window.URL.createObjectURL(localMediaStream);
+    videoLeft.onloadedmetadata = function(e) {};
+  }, e => console.error('Error during video acquisition:', e));
+  navigator.getUserMedia({video: true}, localMediaStream => {
+    var videoRight = document.querySelector('#right');
+    videoRight.src = window.URL.createObjectURL(localMediaStream);
+    videoRight.onloadedmetadata = function(e) {};
+  }, e => console.error('Error during video acquisition:', e));
+}
+initVideo();
