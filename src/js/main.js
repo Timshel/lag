@@ -138,7 +138,7 @@ function initVideo() {
     if (lagValue === 0) {
       return 1;
     } else {
-      return parseInt(lagValue/refreshValue * 1000);
+      return parseInt(lagValue/refreshValue);
     }
   }
 
