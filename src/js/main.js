@@ -76,16 +76,11 @@ var lagValue = lagSlider.value;
 var lagShown = document.getElementById("lag-shown");
 lagShown.innerHTML = lagValue;
 
-var refreshValue = 40;
+var refreshValue = 100;
 
 navigator.getUserMedia({video: true, audio: true}, localMediaStream => {
   videoLeft.src = window.URL.createObjectURL(localMediaStream);
   videoLeft.onloadedmetadata = function(e) {};
-  // navigator.getUserMedia({video: true}, localMediaStream => {
-    videoRight.src = window.URL.createObjectURL(localMediaStream);
-    // videoRight.onloadedmetadata = function(e) {};
-  // }, e => console.error('Error during video acquisition:', e));
-
   initVideo();
 }, e => console.error('Error during video acquisition:', e));
 
@@ -107,25 +102,32 @@ function initVideo() {
     context.scale(-1, 1);
   };
 
-  function onPlay(video, canvasAndContextHidden, canvasAndContextShow, buffer){
+  function onPlay(video, canvasAndContextHidden, canvasAndContextShow1, canvasAndContextShow2, buffer){
     var [canvasHidden, canvasHiddenCon] = canvasAndContextHidden;
-    var [canvasShown, canvasShownCon]   = canvasAndContextShow;
+    var [canvasShown1, canvasShown1Con] = canvasAndContextShow1;
+    var [canvasShown2, canvasShown2Con] = canvasAndContextShow2;
 
     setTimeout(() => {
       var w = video.offsetWidth;
       var h = video.offsetHeight;
 
       setDimensions(canvasHidden, video);
-      setDimensions(canvasShown, video);
+      setDimensions(canvasShown1, video);
+      setDimensions(canvasShown2, video);
 
       setInterval(function() {
         if (video.paused || video.ended) return;
         canvasHiddenCon.fillRect(0, 0, w, h);
         canvasHiddenCon.drawImage(video, 0, 0, w, h);
-        canvasShownCon.fillRect(0, 0, w, h);
+
+        canvasShown1Con.fillRect(0, 0, w, h);
+        canvasShown2Con.fillRect(0, 0, w, h);
+
+
         var el = buffer.put(canvasHiddenCon.getImageData(0, 0, w, h));
         if (el !== undefined) {
-          canvasShownCon.putImageData(el, 0, 0);
+          canvasShown1Con.putImageData(el, 0, 0);
+          canvasShown2Con.putImageData(el, 0, 0);
         }
       }, refreshValue);
     }, 1000);
@@ -156,17 +158,9 @@ function initVideo() {
       videoLeft,
       getCanvasAndContext('left-hidden'),
       getCanvasAndContext('left-shown'),
+      getCanvasAndContext('right-shown'),
       leftBuffer
     );
-  }, false);
-
-  videoRight.addEventListener('play', function() {
-    onPlay(
-      videoRight,
-      getCanvasAndContext('right-hidden'),
-      getCanvasAndContext('right-shown'),
-      rightBuffer
-    )
   }, false);
 
   if (navigator.getUserMedia === undefined) {
