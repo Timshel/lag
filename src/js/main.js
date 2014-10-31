@@ -46,11 +46,10 @@ var Buffer = function (tpl) {
   var size = tpl.size;
   var elems = new Array(size);
   var idx = 1;
-  function put(newEl) {
-    var oldEl = elems[idx];
+  function put(el) {
+    elems[idx] = el;
     idx = (idx + 1) % size;
-    elems[idx] = newEl;
-    return oldEl;
+    return elems[idx];
   }
   return {
     size,
