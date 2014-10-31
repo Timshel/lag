@@ -58,11 +58,21 @@ var Buffer = function (tpl) {
   };
 };
 
+var videoLeft  = document.querySelector('#left-video');
+var videoRight = document.querySelector('#right-video');
+
+navigator.getUserMedia({video: true, audio: true}, localMediaStream => {
+  videoLeft.src = window.URL.createObjectURL(localMediaStream);
+  videoLeft.onloadedmetadata = function(e) {};
+  // navigator.getUserMedia({video: true}, localMediaStream => {
+    videoRight.src = window.URL.createObjectURL(localMediaStream);
+    // videoRight.onloadedmetadata = function(e) {};
+  // }, e => console.error('Error during video acquisition:', e));
+
+  initVideo();
+}, e => console.error('Error during video acquisition:', e));
+
 function initVideo() {
-
-  var videoLeft  = document.querySelector('#left-video');
-  var videoRight = document.querySelector('#right-video');
-
   function getCanvasAndContext(id) {
     var canvas = document.getElementById(id);
     var conn = canvas.getContext('2d');
@@ -81,6 +91,9 @@ function initVideo() {
 
   var w = videoLeft.offsetWidth;
   var h = videoLeft.offsetHeight;
+
+  console.log(w)
+  console.log(h)
 
   var initialized = false;
   videoLeft.addEventListener('canplay', e => {
@@ -142,13 +155,4 @@ function initVideo() {
     console.error("getUserMedia() not found");
     return;
   }
-  navigator.getUserMedia({video: true, audio: true}, localMediaStream => {
-    videoLeft.src = window.URL.createObjectURL(localMediaStream);
-    videoLeft.onloadedmetadata = function(e) {};
-    // navigator.getUserMedia({video: true}, localMediaStream => {
-      videoRight.src = window.URL.createObjectURL(localMediaStream);
-      // videoRight.onloadedmetadata = function(e) {};
-    // }, e => console.error('Error during video acquisition:', e));
-  }, e => console.error('Error during video acquisition:', e));
 }
-initVideo();
