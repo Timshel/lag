@@ -1,0 +1,50 @@
+* {
+  box-sizing: border-box;
+  padding: o;
+  margin: 0;
+}
+html,
+body {
+  height: 100%;
+}
+.left {
+  left: 0;
+}
+.right {
+  right: 0;
+}
+#dive {
+  background-color: #000;
+  height: 100%;
+  position: relative;
+}
+#dive .holder {
+  display: inline-block;
+  position: absolute;
+  overflow: hidden;
+  height: 100%;
+  width: 50%;
+  top: 0;
+}
+#dive video {
+  position: absolute;
+  width: 120%;
+}
+#dive canvas {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.hidden {
+  visibility: hidden;
+}
+#controls > * {
+  display: inline-block;
+  margin-right: 5px;
+}
+#controls #lag-slider {
+  width: 50%;
+}
+#controls button {
+  height: 100%;
+}
