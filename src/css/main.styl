@@ -6,6 +6,12 @@
 html, body
   height: 100%
 
+.left
+  left: 0
+
+.right
+  right: 0
+
 #dive
   background-color: black
   height: 100%
@@ -19,12 +25,8 @@ html, body
     width: 50%
     top: 0
 
-    &.left
-      left: 0
-
-    &.right
-      right: 0
-
   video
-    right: 50%
-    height: 100%
+    width: 120%
+    position: absolute
+    top: 50%
+    transform: translateY(-50%)
