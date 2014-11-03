@@ -76,15 +76,28 @@ var lagValue = lagSlider.value;
 var lagShown = document.getElementById("lag-shown");
 lagShown.innerHTML = lagValue;
 
+var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
 var refreshValue = 100;
 
 navigator.getUserMedia({video: true, audio: true}, localMediaStream => {
   videoLeft.src = window.URL.createObjectURL(localMediaStream);
   videoLeft.onloadedmetadata = function(e) {};
-  initVideo();
+
+  videoLeft.muted = 'true';
+  videoLeft.volume = 0.0;
+
+  var source = audioCtx.createMediaStreamSource(localMediaStream);
+  var delay  = audioCtx.createDelay(lagSlider.value / 1000);
+
+  source.connect(delay);
+  delay.connect(audioCtx.destination);
+
+  initVideo(delay);
+
 }, e => console.error('Error during video acquisition:', e));
 
-function initVideo() {
+function initVideo(delay) {
   function getCanvasAndContext(id) {
     var canvas = document.getElementById(id);
     var conn = canvas.getContext('2d');
@@ -144,11 +157,16 @@ function initVideo() {
   var leftBuffer = Buffer({size: computeBufferSize()});
   var rightBuffer = Buffer({size: computeBufferSize()});
 
-  function setLag() {
+  lagSlider.oninput = function() {
     lagValue = lagSlider.value;
     lagShown.innerHTML = lagValue;
+  }
+  function setLag() {
+    lagValue = lagSlider.value;
     leftBuffer.updateSize(computeBufferSize());
     rightBuffer.updateSize(computeBufferSize());
+    delay.delayTime.value = lagValue / 1000;
+    console.log(delay.delayTime.value);
   }
   lagSlider.addEventListener("change", setLag);
 
